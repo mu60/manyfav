@@ -68,8 +68,14 @@ function test() {
 	);
 	*/
 	$found_ids = get_tweet_fav_users(1054654097134157824);
-
-	debug($found_ids);
+	$fav_count = [];
+	foreach($found_ids as $user_id) {
+		if(!isset($fav_count[$user_id])) {
+			$fav_count[$user_id] = 0;
+		}
+		++$fav_count[$user_id];
+	}
+	debug($fav_count);
 }
 
 function get_tweet_fav_users($tweet_id) {
