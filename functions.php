@@ -76,7 +76,7 @@ function test() {
 		}
 	}
 	arsort($fav_count);
-	array_splice($fav_count, 10);
+	$fav_count = array_slice($fav_count, 0, 10, true);
 	$ranking = fav_user_ranking($fav_count);
 	debug($ranking);
 }
@@ -120,7 +120,6 @@ function fav_user_ranking($fav_count) {
 			'user_id' => $user_id,
 		];
 		$user = $connect->get('users/show', $attr);
-		debug($user);
 		$img = $user->profile_image_url_https;
 		$img = str_replace('_normal.png', ".png", $img);
 		if($count != $before_count) {
