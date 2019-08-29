@@ -13,17 +13,18 @@ main#index_page
 					span 件
 		p.button_wrap
 			button(type="submit", name="submit", value="true") 実行
-
 	| {if filter_input(INPUT_GET, "screen_name") && filter_input(INPUT_GET, "count")}
 	ul.ranking
 		| {foreach get_fav_ranking() as $user}
-		li.item
-			p 
-				img(src!='{$user["img"]}', alt!='{$user["name"]}')
-			p {$user["name"]}
-			p @{$user["screen_name"]}
-			p {$user["rank"]}位
-			p {$user["count"]}回
+		li(class!='item rank{$user["rank"]}')
+			a(href!='https://twitter.com/{$user["screen_name"]}', target="_blank")
+				p.rank {$user["rank"]}
+				p.image
+					img(src!='{$user["img"]}', alt!='{$user["name"]}')
+				.name
+					p.username {$user["name"]}
+					p.screen_name @{$user["screen_name"]}
+				p.count {$user["count"]}回
 		| {/foreach}
 	| {elseif filter_input(INPUT_GET, "submit") == true}
 	p.error 正しい値を入力してください。
