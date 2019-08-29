@@ -63,6 +63,11 @@ function get_fav_ranking() {
 		'include_rts' => 'false'
 	];
 	$tweets = $connect->get('statuses/user_timeline', $attr);
+	if(key($tweets) === "errors") {
+		return "ユーザが存在しません。";
+	} elseif(key($tweets) === "request") {
+		return "非公開ユーザーのツイートは取得できません。";
+	}
 	$fav_count = [];
 	$tweet_ids = [];
 	foreach($tweets as $tweet) {
@@ -74,6 +79,9 @@ function get_fav_ranking() {
 			}
 			++$fav_count[$user_id];
 		}
+	}
+	if(!$fav_count) {
+		return "いいねされたツイートがありません。";
 	}
 	arsort($fav_count);
 	$fav_count = array_slice($fav_count, 0, 10, true);
