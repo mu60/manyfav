@@ -49,14 +49,14 @@ function debug($val) {
 	echo "</code></pre>";
 }
 
-function test() {
+function get_fav_ranking() {
 	$connect = include_twitter();
 	// 取得するツイートの条件を配列で指定
 	$attr = [
 		// ユーザー名（@は不要）
-		'screen_name' => 'wiredpunch',
+		'screen_name' => filter_input(INPUT_GET, "screen_name"),
 		// ツイート件数
-		'count' => '100',
+		'count' => filter_input(INPUT_GET, "count"),
 		// リプライを除外するかを、true（除外する）、false（除外しない）で指定
 		'exclude_replies' => 'false',
 		// リツイートを含めるかを、true（含める）、false（含めない）で指定
@@ -78,7 +78,7 @@ function test() {
 	arsort($fav_count);
 	$fav_count = array_slice($fav_count, 0, 10, true);
 	$ranking = fav_user_ranking($fav_count);
-	debug($ranking);
+	return $ranking;
 }
 
 function tweet_fav_users($tweet_id) {
@@ -122,6 +122,7 @@ function fav_user_ranking($fav_count) {
 		$user = $connect->get('users/show', $attr);
 		$img = $user->profile_image_url_https;
 		$img = str_replace('_normal.png', ".png", $img);
+		$img = str_replace('_normal.jpg', ".jpg", $img);
 		if($count != $before_count) {
 			$rank = $i;
 			$before_count = $count;

@@ -1,3 +1,45 @@
-p aaa
+main#index_page
+	form(method="get", action="{home_url()}")
+		.wrap
+			dl
+				dt ユーザ名
+				dd 
+					span @
+					input(type="text", name="screen_name", value!='{filter_input(INPUT_GET, "screen_name")}')
+			dl
+				dt ツイート取得数
+				dd
+					input(type="text", name="count", value!='{filter_input(INPUT_GET, "count")}')
+					span 件
+		p.button_wrap
+			button(type="submit", name="submit", value="true") 実行
 
-div {test()}
+	| {if filter_input(INPUT_GET, "screen_name") && filter_input(INPUT_GET, "count")}
+	ul.ranking
+		| {foreach get_fav_ranking() as $user}
+		li.item
+			p 
+				img(src!='{$user["img"]}', alt!='{$user["name"]}')
+			p {$user["name"]}
+			p @{$user["screen_name"]}
+			p {$user["rank"]}位
+			p {$user["count"]}回
+		| {/foreach}
+	| {elseif filter_input(INPUT_GET, "submit") == true}
+	p.error 正しい値を入力してください。
+	| {/if}
+
+	.adsense
+		p.text 広告
+		.ads
+			| <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			| <!-- めにぃふぁぼ -->
+			| <ins class="adsbygoogle"
+			|      style="display:block"
+			|      data-ad-client="ca-pub-5119381531318562"
+			|      data-ad-slot="2539573284"
+			|      data-ad-format="auto"
+			|      data-full-width-responsive="true"></ins>
+			| <script>
+			|      (adsbygoogle = window.adsbygoogle || []).push({});
+			| </script>
