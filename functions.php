@@ -50,35 +50,39 @@ function debug($val) {
 }
 
 function test() {
-	/*
 	$connect = include_twitter();
-	$statuses = $connect->get(
+	$tweets = $connect->get(
 		'statuses/user_timeline',
 		// 取得するツイートの条件を配列で指定
 		array(
 			// ユーザー名（@は不要）
 			'screen_name' => 'wiredpunch',
 			// ツイート件数
-			'count' => '5',
+			'count' => '100',
 			// リプライを除外するかを、true（除外する）、false（除外しない）で指定
-			'exclude_replies' => 'true',
+			'exclude_replies' => 'false',
 			// リツイートを含めるかを、true（含める）、false（含めない）で指定
 			'include_rts' => 'false'
 		)
 	);
-	*/
-	$found_ids = get_tweet_fav_users(1054654097134157824);
 	$fav_count = [];
-	foreach($found_ids as $user_id) {
-		if(!isset($fav_count[$user_id])) {
-			$fav_count[$user_id] = 0;
+	$tweet_ids = [];
+	foreach($tweets as $tweet) {
+		array_push($tweet_ids, $tweet->id);
+		$found_ids = tweet_fav_users($tweet->id_str);
+		foreach($found_ids as $user_id) {
+			if(!isset($fav_count[$user_id])) {
+				$fav_count[$user_id] = 0;
+			}
+			++$fav_count[$user_id];
 		}
-		++$fav_count[$user_id];
 	}
+	arsort($fav_count);
+	$ranking = fav_user_ranking($fav_count);
 	debug($fav_count);
 }
 
-function get_tweet_fav_users($tweet_id) {
+function tweet_fav_users($tweet_id) {
 	$url = "https://twitter.com/i/activity/favorited_popup?id=".$tweet_id;
 	$option = [
 		CURLOPT_RETURNTRANSFER => true, //文字列として返す
@@ -104,4 +108,8 @@ function get_tweet_fav_users($tweet_id) {
 		array_push($output, intval($user_id));
 	}
 	return $output;
+}
+
+function fav_user_ranking($fav_count) {
+	$output = [];
 }
