@@ -3,9 +3,9 @@
 # Example .gitignore files: https://github.com/github/gitignore
 /bower_components/
 /node_modules/
-/smarty/
 /templates_c/
 *.tpl
 *.map
 style.css
-/twitteroauth/
+/lib/
+twitter.php
