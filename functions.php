@@ -68,6 +68,7 @@ function test() {
 	);
 	*/
 	$found_ids = get_tweet_fav_users(1054654097134157824);
+
 	debug($found_ids);
 }
 
@@ -85,17 +86,15 @@ function get_tweet_fav_users($tweet_id) {
 	$info	= curl_getinfo($ch);
 	$errorNo = curl_errno($ch);
 	$json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
-
-	$content = str_replace('\"', "", $json);
-	preg_match_all('/data-user-id=+\d+/u', $content, $found_ids);
-	//preg_match_all('/data-user-id=\\"+\d+/u', $json, $found_ids);
+	$decode_text = json_decode($json);
+	$html = $decode_text->htmlUsers;
+	preg_match_all('/data-user-id=\\"+\d+/u', $html, $found_ids);
 	$found_ids = $found_ids["0"];
 	$found_ids = array_unique($found_ids);
 	$found_ids = array_values($found_ids);
-	array_shift($found_ids); // 先頭は投稿者なので削除
 	$output = [];
 	foreach($found_ids as $user_id) {
-		$user_id = str_replace('data-user-id=', "", $user_id);
+		$user_id = str_replace('data-user-id="', "", $user_id);
 		array_push($output, intval($user_id));
 	}
 	return $output;
