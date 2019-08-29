@@ -113,19 +113,29 @@ function fav_user_ranking($fav_count) {
 	$output = [];
 	$connect = include_twitter();
 	$i = 1;
+	$before_rank = 0;
+	$before_count = 0;
 	foreach($fav_count as $user_id => $count) {
 		$attr = [
 			'user_id' => $user_id,
 		];
 		$user = $connect->get('users/show', $attr);
+		debug($user);
 		$img = $user->profile_image_url_https;
 		$img = str_replace('_normal.png', ".png", $img);
+		if($count != $before_count) {
+			$rank = $i;
+			$before_count = $count;
+			$before_rank = $rank;
+		} else {
+			$rank = $before_rank;
+		}
 		$temp = [
 			"name" => $user->name,
 			"screen_name" => $user->screen_name,
 			"img" => $img,
 			"count" => $count,
-			"rank" => $i,
+			"rank" => $rank,
 		];
 		++$i;
 		array_push($output, $temp);
