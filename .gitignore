@@ -1,0 +1,7 @@
+
+/smarty/
+/templates_c/
+*.tpl
+*.map
+*.css
+*.js
