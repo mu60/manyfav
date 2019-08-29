@@ -50,29 +50,6 @@ function debug($val) {
 }
 
 function test() {
-	$url = "https://twitter.com/i/activity/favorited_popup?id=1054654097134157824";
-    $option = [
-        CURLOPT_RETURNTRANSFER => true, //文字列として返す
-        CURLOPT_TIMEOUT        => 3, // タイムアウト時間
-    ];
-
-    $ch = curl_init($url);
-    curl_setopt_array($ch, $option);
-
-    $json    = curl_exec($ch);
-    $info    = curl_getinfo($ch);
-    $errorNo = curl_errno($ch);
-	$json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
-
-	$test = str_replace('\"', "", $json);
-	preg_match_all('/data-user-id=+\d+/u', $test, $found_ids);
-	//preg_match_all('/data-user-id=\\"+\d+/u', $json, $found_ids);
-	$found_ids = $found_ids["0"];
-	$found_ids = array_unique($found_ids);
-	$found_ids = array_values($found_ids);
-	array_shift($found_ids); // 先頭は投稿者なので削除
-
-	//$arr = json_decode($json,true);
 	/*
 	$connect = include_twitter();
 	$statuses = $connect->get(
@@ -90,6 +67,31 @@ function test() {
 		)
 	);
 	*/
+	$found_ids = get_tweet_fav_users(1054654097134157824);
 	debug($found_ids);
-	debug($json);
+}
+
+function get_tweet_fav_users($tweet_id) {
+	$url = "https://twitter.com/i/activity/favorited_popup?id=".$tweet_id;
+    $option = [
+        CURLOPT_RETURNTRANSFER => true, //文字列として返す
+        CURLOPT_TIMEOUT        => 3, // タイムアウト時間
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, $option);
+
+    $json    = curl_exec($ch);
+    $info    = curl_getinfo($ch);
+    $errorNo = curl_errno($ch);
+	$json = mb_convert_encoding($json, 'UTF8', 'ASCII,JIS,UTF-8,EUC-JP,SJIS-WIN');
+
+	$content = str_replace('\"', "", $json);
+	preg_match_all('/data-user-id=+\d+/u', $content, $found_ids);
+	//preg_match_all('/data-user-id=\\"+\d+/u', $json, $found_ids);
+	$found_ids = $found_ids["0"];
+	$found_ids = array_unique($found_ids);
+	$found_ids = array_values($found_ids);
+	array_shift($found_ids); // 先頭は投稿者なので削除
+	return $found_ids;
 }
