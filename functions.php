@@ -51,20 +51,18 @@ function debug($val) {
 
 function test() {
 	$connect = include_twitter();
-	$tweets = $connect->get(
-		'statuses/user_timeline',
-		// 取得するツイートの条件を配列で指定
-		array(
-			// ユーザー名（@は不要）
-			'screen_name' => 'wiredpunch',
-			// ツイート件数
-			'count' => '100',
-			// リプライを除外するかを、true（除外する）、false（除外しない）で指定
-			'exclude_replies' => 'false',
-			// リツイートを含めるかを、true（含める）、false（含めない）で指定
-			'include_rts' => 'false'
-		)
-	);
+	// 取得するツイートの条件を配列で指定
+	$attr = [
+		// ユーザー名（@は不要）
+		'screen_name' => 'wiredpunch',
+		// ツイート件数
+		'count' => '100',
+		// リプライを除外するかを、true（除外する）、false（除外しない）で指定
+		'exclude_replies' => 'false',
+		// リツイートを含めるかを、true（含める）、false（含めない）で指定
+		'include_rts' => 'false'
+	];
+	$tweets = $connect->get('statuses/user_timeline', $attr);
 	$fav_count = [];
 	$tweet_ids = [];
 	foreach($tweets as $tweet) {
@@ -78,8 +76,9 @@ function test() {
 		}
 	}
 	arsort($fav_count);
+	array_splice($fav_count, 10);
 	$ranking = fav_user_ranking($fav_count);
-	debug($fav_count);
+	debug($ranking);
 }
 
 function tweet_fav_users($tweet_id) {
@@ -112,4 +111,24 @@ function tweet_fav_users($tweet_id) {
 
 function fav_user_ranking($fav_count) {
 	$output = [];
+	$connect = include_twitter();
+	$i = 1;
+	foreach($fav_count as $user_id => $count) {
+		$attr = [
+			'user_id' => $user_id,
+		];
+		$user = $connect->get('users/show', $attr);
+		$img = $user->profile_image_url_https;
+		$img = str_replace('_normal.png', ".png", $img);
+		$temp = [
+			"name" => $user->name,
+			"screen_name" => $user->screen_name,
+			"img" => $img,
+			"count" => $count,
+			"rank" => $i,
+		];
+		++$i;
+		array_push($output, $temp);
+	}
+	return $output;
 }
